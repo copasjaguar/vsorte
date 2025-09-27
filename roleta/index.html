@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aguardando pagamento…</title>
+
+  <!-- Fonte elegante -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --text: #ffffff;
+      --accent: #7FDBFF;
+      --shadow: 0 10px 40px rgba(0, 30, 80, .28);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      /* ===== Fundo azul gradiente suave ===== */
+      background: linear-gradient(135deg, #0f98ff 0%, #2f62ff 50%, #142c72 100%);
+      background-attachment: fixed;
+      display:flex; align-items:center; justify-content:center;
+      min-height:100vh;
+      padding: clamp(16px, 4vw, 32px);
+    }
+    .card{
+      width:min(92vw, 720px);
+      text-align:center;
+      padding:clamp(22px, 5vw, 40px);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      background: linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: pop .6s ease both;
+    }
+    @keyframes pop{
+      from{transform:translateY(8px) scale(.98); opacity:0}
+      to{transform:none; opacity:1}
+    }
+
+    /* ===== Logo girando ao centro ===== */
+    .logo-wrap{
+      display:grid; place-items:center;
+      margin-inline:auto;
+      margin-bottom: clamp(14px, 3.2vw, 24px);
+    }
+    .logo{
+      width:min(60vw, 220px);
+      max-width: 240px;
+      height:auto;
+      animation: spin 6s linear infinite;
+      filter: drop-shadow(0 10px 28px rgba(0,0,0,.35));
+      user-select:none;
+      pointer-events:none;
+    }
+    @keyframes spin{
+      from{transform: rotate(0deg)}
+      to{transform: rotate(360deg)}
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size:clamp(22px, 5.4vw, 34px);
+      line-height:1.15;
+      font-weight:800;
+      letter-spacing:.2px;
+      text-shadow: 0 2px 16px rgba(0,0,0,.18);
+    }
+    p.lead{
+      margin:0 0 10px;
+      font-size:clamp(14px, 3.6vw, 18px);
+      opacity:.95;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      display:inline-block;margin-right:8px;background:var(--accent);
+      box-shadow: 0 0 0 0 rgba(127,219,255,.7);
+      animation: pulse 1.5s infinite;
+      vertical-align:middle;
+    }
+    @keyframes pulse{
+      0%{box-shadow:0 0 0 0 rgba(127,219,255,.7)}
+      70%{box-shadow:0 0 0 16px rgba(127,219,255,0)}
+      100%{box-shadow:0 0 0 0 rgba(127,219,255,0)}
+    }
+    .sub{
+      margin-top:6px;
+      opacity:.85;
+      font-size:clamp(12px, 3.2vw, 14px);
+    }
+    .hint{
+      margin-top:16px;
+      font-size:clamp(12px, 3vw, 13px);
+      opacity:.8;
+    }
+    .hint a{color:#e6fbff; text-decoration:underline}
+    @media (max-width:420px){
+      .card{border-radius:18px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-live="polite">
+    <div class="logo-wrap">
+      <!-- Troque LOGO_URL por um link DIRETO da imagem (ex.: https://i.ibb.co/.../logo.png) -->
+      <img class="logo" src="https://ibb.co/67wQLM3B" alt="Logo">
+    </div>
+
+    <h1><span class="dot"></span> Carregando seu prêmio, aguarde…</h1>
+    <p class="lead" id="msg">Estamos validando seu pagamento.</p>
+    <div class="sub" id="sub">Isso pode levar alguns segundos. Não feche esta página.</div>
+    <div class="hint" id="fallback" style="display:none">
+      Está demorando? <a id="acesso" href="/acesso.html">Acesse manualmente por aqui</a>.
+    </div>
+  </main>
+
+  <script>
+    // ===== Configuração =====
+    const MIN_SPLASH_MS = 4000; // pelo menos 4s de splash
+    const ALLOW = ['/obrigado.html','/entrega.html','/meu-bonus.html']; // destinos válidos
+
+    const params  = new URLSearchParams(location.search);
+    const order   = params.get('order');
+    const goParam = params.get('go') || '/obrigado.html';
+    const destino = ALLOW.includes(goParam) ? goParam : '/obrigado.html';
+
+    // link de fallback
+    const acesso = document.getElementById('acesso');
+    if (acesso) {
+      acesso.href = '/aguardando.html?order=' + encodeURIComponent(order || '') + '&go=' + encodeURIComponent(destino);
+    }
+
+    const start = Date.now();
+    let paid = false, tries = 0;
+
+    function setMsg(t){ document.getElementById('msg').textContent = t; }
+    function setSub(t){ document.getElementById('sub').textContent = t; }
+
+    async function check(){
+      if(!order){
+        setMsg('Faltou o número do pedido (?order=...)');
+        setSub('Volte ao checkout e copie o número do pedido.');
+        return;
+      }
+      try{
+        const r = await fetch('/api/y?op=status&order='+encodeURIComponent(order), { cache:'no-store' });
+        const j = await r.json();
+        if(j.status === 'paid'){
+          paid = true;
+          maybeRedirect();
+          return;
+        }
+      }catch(e){ /* tenta de novo */ }
+
+      tries++;
+      if(tries % 3 === 0) setSub('Ainda validando…');
+      if(tries === 40){ // ~2min
+        document.getElementById('fallback').style.display = 'block';
+        setSub('Pode levar um pouco mais em alguns bancos.');
+      }
+      setTimeout(check, 3000);
+    }
+
+    function maybeRedirect(){
+      const elapsed = Date.now() - start;
+      const wait = Math.max(0, MIN_SPLASH_MS - elapsed);
+      setTimeout(()=>{ location.href = destino; }, wait);
+    }
+
+    // UX: micro feedback enquanto espera
+    setTimeout(()=> setMsg('Preparando seu acesso…'), 1100);
+    check();
+  </script>
+</body>
+</html>

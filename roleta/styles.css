@@ -1,0 +1,149 @@
+:root{
+  --bg1:#ffe2f5; --bg2:#c1e7ff;
+  --segA:#1fb6ff; --segB:#2196f3;
+  --pink:#ff4ec6; --pink-strong:#ff2aa8;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto}
+body{
+  background:
+    radial-gradient(1200px 700px at 20% 10%, var(--bg2) 0%, #fff0 60%),
+    radial-gradient(1000px 900px at 80% 20%, #ffd3ea 0%, #fff0 60%),
+    linear-gradient(180deg,#ffe8f7, #e6f6ff 60%, #ffffff);
+  display:flex;align-items:center;justify-content:center;padding:24px;color:#172033;
+}
+.stage{position:relative;max-width:980px;width:100%;display:grid;gap:28px;grid-template-columns:1fr 420px;align-items:center}
+@media (max-width:920px){.stage{grid-template-columns:1fr}}
+.panel{
+  background:linear-gradient(180deg,#ffffffee,#ffffffcc);
+  border:1px solid #ffffff80;border-radius:22px;padding:22px 22px 26px;
+  box-shadow:0 20px 60px rgba(34,33,81,.14), inset 0 0 0 1px #ffffff; backdrop-filter:blur(6px);
+}
+.title{margin:0 0 10px 0;font-weight:900;letter-spacing:.3px;color:#1a49ff;font-size:36px}
+.subtitle{margin:0 0 14px 0;color:#4b5871;font-weight:600}
+.cta{display:flex;gap:12px;align-items:center;margin-top:8px}
+button.spin{
+  appearance:none;border:0;border-radius:999px;padding:14px 22px;font-weight:800;font-size:18px;letter-spacing:.3px;color:white;
+  background:linear-gradient(180deg,var(--pink),var(--pink-strong));
+  box-shadow:0 10px 25px rgba(255,46,162,.45), inset 0 0 0 2px #ffffff30; cursor:pointer;
+  transition:transform .08s ease,filter .2s ease,opacity .2s ease;
+}
+button.spin:hover{transform:translateY(-1px);filter:saturate(1.08)}
+button.spin:active{transform:translateY(1px)}
+button.spin[disabled]{opacity:.6;cursor:not-allowed}
+.note{font-size:13px;color:#5e6b86}
+
+.wrap{position:relative;width:min(560px,92vw);aspect-ratio:1/1;margin-inline:auto;display:grid;place-items:center}
+.rim{position:absolute;inset:0;border-radius:50%;
+     background:linear-gradient(180deg,#1b2155,#0b103b);
+     box-shadow:0 18px 40px rgba(0,0,0,.25), inset 0 0 0 10px #0a1033, inset 0 0 0 20px #13206b;}
+.bulbs{position:absolute;inset:3%;border-radius:50%;pointer-events:none}
+.bulbs::before{
+  content:"";position:absolute;inset:-4px;border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, #ffd23b 0 4px, #0000 5px) 0 0/40px 40px,
+    radial-gradient(circle at 20px 20px, #ffd23b 0 4px, #0000 5px) 0 0/40px 40px;
+  animation:twinkle 1.2s linear infinite;
+  mask:radial-gradient(circle at 50% 50%, #0000 76%, #000 76%);
+}
+@keyframes twinkle{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6)}}
+
+.wheel{
+  position:relative;width:86%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;transform:rotate(0deg);
+  background:
+    conic-gradient(var(--segA) 0 45deg, var(--segB) 45deg 90deg,
+                   var(--segA) 90deg 135deg, var(--segB) 135deg 180deg,
+                   var(--segA) 180deg 225deg, var(--segB) 225deg 270deg,
+                   var(--segA) 270deg 315deg, var(--segB) 315deg 360deg);
+  box-shadow:inset 0 0 80px rgba(255,255,255,.15), inset 0 0 0 2px #ffffff40;
+}
+
+.wlabels{position:absolute;inset:0;pointer-events:none}
+.wlabel{
+  position:absolute;left:50%;top:50%;transform-origin:0 0;text-align:center;white-space:pre-line;width:160px;
+  font-size:18px;font-weight:900;letter-spacing:.6px;
+  color:transparent;
+  background:linear-gradient(180deg,#fff6bf,#ffe067 40%,#d4a211 60%,#8d5d00 100%);
+  -webkit-background-clip:text;background-clip:text;
+  text-shadow:0 1px 0 #fff3,0 2px 0 #ffe9,0 3px 0 #d4a211aa,0 4px 4px rgba(0,0,0,.35);
+}
+@media (max-width:560px){ .wlabel{font-size:15px;width:130px} }
+
+.cap{
+  position:absolute;inset:50% auto auto 50%;translate:-50% -50%;width:22%;aspect-ratio:1/1;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff, #ffd54d 40%, #c59000 70%, #8a5c00 100%);
+  box-shadow:0 6px 14px rgba(0,0,0,.35), inset 0 0 0 2px #ffffff80;
+  display:grid;place-items:center;font-weight:900;color:#222;letter-spacing:.5px;font-size:12px;
+}
+.cap span{background:linear-gradient(180deg,#fff7bf,#ffe05a);padding:4px 10px;border-radius:999px;border:1px solid #ffffff90;box-shadow:0 3px 0 #00000010}
+
+.pointer{position:absolute;top:-12px;left:50%;translate:-50% 0;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #ffe45c;filter:drop-shadow(0 5px 6px rgba(0,0,0,.45))}
+.pointer::after{content:"";position:absolute;left:-12px;top:16px;width:24px;height:10px;border-radius:10px;background:linear-gradient(180deg,#fff7bf,#ffc54d);box-shadow:inset 0 0 0 2px #ffffff90}
+
+canvas#confetti{position:fixed;inset:0;pointer-events:none}
+.hidden{display:none!important}
+
+/* ===== animações extras ===== */
+@keyframes breatheBg {
+  0%,100% { filter: saturate(1) brightness(1); }
+  50%     { filter: saturate(1.06) brightness(1.03); }
+}
+@keyframes pulseScale {
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.02); }
+}
+@keyframes neonGlow {
+  0%,100% { box-shadow: 0 18px 40px rgba(0,0,0,.25),
+                       inset 0 0 0 10px #0a1033,
+                       inset 0 0 0 20px #13206b,
+                       0 0 0 0 rgba(255,210,0,.0); }
+  50%     { box-shadow: 0 22px 48px rgba(0,0,0,.28),
+                       inset 0 0 0 10px #0a1033,
+                       inset 0 0 0 20px #13206b,
+                       0 0 35px 6px rgba(255,210,0,.35); }
+}
+@keyframes bulbsPulse {
+  0%,100% { filter: brightness(1); }
+  50%     { filter: brightness(1.5); }
+}
+@keyframes wiggle {
+  0%,100% { transform: translate(-50%,0) rotate(0deg); }
+  50%     { transform: translate(-50%,0) rotate(-3deg); }
+}
+@keyframes popIn {
+  0%   { transform: scale(.94); filter: saturate(.9); }
+  100% { transform: scale(1);   filter: saturate(1); }
+}
+@keyframes btnPulse {
+  0%,100% { transform: translateY(0) scale(1); box-shadow: 0 10px 25px rgba(255,46,162,.45); }
+  50%     { transform: translateY(-2px) scale(1.03); box-shadow: 0 16px 34px rgba(255,46,162,.55); }
+}
+
+/* fundo respirando sutilmente */
+body { animation: breatheBg 6s ease-in-out infinite; }
+
+/* roleta “viva” quando parada */
+.wheel { animation: pulseScale 3.5s ease-in-out infinite; }
+.rim   { animation: neonGlow 3.5s ease-in-out infinite; }
+.bulbs::before { animation: bulbsPulse 1.2s linear infinite; }
+
+/* ponteiro com wiggle leve (parado) */
+.pointer { animation: wiggle 1.8s ease-in-out infinite; transform-origin: 50% 0; }
+
+/* botão chamando atenção (se ainda pode girar) */
+body.can-spin #spinBtn { animation: btnPulse 2.2s ease-in-out infinite; }
+
+/* quando começar a girar: dar “pop” e intensificar brilho */
+body.is-spinning .wheel,
+body.is-spinning .rim { animation: popIn .28s ease forwards; }
+body.is-spinning .bulbs::before { animation-duration: .6s; }
+
+/* parallax/tilt (controlado por JS via variáveis CSS) */
+:root{ --tiltX: 0deg; --tiltY: 0deg; }
+.wrap { perspective: 900px; transform-style: preserve-3d; }
+.wrap > *:not(canvas) { transform: rotateX(var(--tiltX)) rotateY(var(--tiltY)); transition: transform .08s linear; }
+
+/* respeita usuários com redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: 0ms !important; }
+}
